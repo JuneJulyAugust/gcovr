@@ -24,19 +24,21 @@ def _real_print_text_report(covdata, OUTPUT, options):
     total_lines = 0
     total_covered = 0
 
+    width = 78
+    filename_width = 54
+
     # Header
-    OUTPUT.write("-" * 78 + '\n')
+    OUTPUT.write("-" * width + '\n')
     OUTPUT.write(" " * 27 + "GCC Code Coverage Report\n")
     OUTPUT.write("Directory: " + options.root + "\n")
 
-    OUTPUT.write("-" * 78 + '\n')
+    OUTPUT.write("-" * width + '\n')
     a = options.show_branch and "Branches" or "Lines"
     b = options.show_branch and "Taken" or "Exec"
-    c = "Missing"
     OUTPUT.write(
-        "File".ljust(40) + a.rjust(8) + b.rjust(8) + "  Cover   " + c + "\n"
+        "File".ljust(filename_width) + a.rjust(8) + b.rjust(8) + "  Cover   \n"
     )
-    OUTPUT.write("-" * 78 + '\n')
+    OUTPUT.write("-" * width + '\n')
 
     # Data
     keys = sort_coverage(
@@ -47,9 +49,9 @@ def _real_print_text_report(covdata, OUTPUT, options):
     def _summarize_file_coverage(coverage):
         filename = presentable_filename(
             coverage.filename, root_filter=options.root_filter)
-        filename = filename.ljust(40)
-        if len(filename) > 40:
-            filename = filename + "\n" + " " * 40
+        filename = filename.ljust(filename_width)
+        if len(filename) > filename_width:
+            filename = filename + "\n" + " " * filename_width
 
         if options.show_branch:
             total, cover, percent = coverage.branch_coverage()
@@ -60,7 +62,7 @@ def _real_print_text_report(covdata, OUTPUT, options):
         percent = '--' if percent is None else str(int(percent))
         return (total, cover,
                 filename + str(total).rjust(8) + str(cover).rjust(8)
-                + percent.rjust(6) + "%   " + uncovered_lines)
+                + percent.rjust(6) + "%")
 
     for key in keys:
         (t, n, txt) = _summarize_file_coverage(covdata[key])
@@ -69,11 +71,11 @@ def _real_print_text_report(covdata, OUTPUT, options):
         OUTPUT.write(txt + '\n')
 
     # Footer & summary
-    OUTPUT.write("-" * 78 + '\n')
+    OUTPUT.write("-" * width + '\n')
     percent = calculate_coverage(total_covered, total_lines, nan_value=None)
     percent = "--" if percent is None else str(int(percent))
     OUTPUT.write(
-        "TOTAL".ljust(40) + str(total_lines).rjust(8)
+        "TOTAL".ljust(filename_width) + str(total_lines).rjust(8)
         + str(total_covered).rjust(8) + str(percent).rjust(6) + "%" + '\n'
     )
-    OUTPUT.write("-" * 78 + '\n')
+    OUTPUT.write("-" * width + '\n')

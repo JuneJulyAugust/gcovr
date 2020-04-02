@@ -38,7 +38,6 @@ from argparse import ArgumentParser
 from os.path import normpath
 from tempfile import mkdtemp
 from shutil import rmtree
-from glob import glob
 
 from .configuration import (
     argument_parser_setup, merge_options_and_set_defaults,
@@ -54,6 +53,7 @@ from .workers import Workers
 # generators
 from .cobertura_xml_generator import print_xml_report
 from .html_generator import print_html_report
+from .folded_html_generator import print_folded_html_report
 from .txt_generator import print_text_report
 from .summary_generator import print_summary
 from .sonarqube_generator import print_sonarqube_report
@@ -260,17 +260,13 @@ def main(args=None):
 def collect_coverage_from_tracefiles(covdata, options, logger):
     datafiles = set()
 
-    for trace_files_regex in options.add_tracefile:
-        trace_files = glob(trace_files_regex, recursive=True)
-        if not trace_files:
+    for trace_file in options.add_tracefile:
+        if not os.path.exists(normpath(trace_file)):
             logger.error(
                 "Bad --add-tracefile option.\n"
                 "\tThe specified file does not exist.")
             sys.exit(1)
-        else:
-            for trace_file in trace_files:
-                datafiles.add(normpath(trace_file))
-
+        datafiles.add(trace_file)
     options.root_dir = os.path.abspath(options.root)
     gcovr_json_files_to_coverage(datafiles, covdata, options)
 
@@ -336,7 +332,7 @@ def print_reports(covdata, options, logger):
     generators.append((
         lambda: options.html or options.html_details,
         [options.html, options.html_details],
-        print_html_report,
+        print_folded_html_report,
         lambda: logger.warn(
             "HTML output skipped - "
             "consider providing an output file with `--html=OUTPUT`.")))
@@ -374,6 +370,8 @@ def print_reports(covdata, options, logger):
                 reports_were_written = True
             else:
                 on_no_output()
+
+    print_text_report(covdata, None, options)
 
     if default_output is not None and default_output.value is not None:
         logger.warn("--output={!r} option was provided but not used.",

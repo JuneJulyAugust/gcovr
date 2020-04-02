@@ -234,3 +234,17 @@ pre
     background-color: #EFE383;
     border-right: 1px solid #BBB15F;
 }
+
+tr.header
+{
+    cursor:pointer;
+}
+
+tr.header .sign:before{
+  content:"-";
+  display:inline-block;
+}
+
+tr.header.expand .sign:before{
+  content:"+";
+ }
