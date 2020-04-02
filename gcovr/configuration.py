@@ -12,7 +12,6 @@
 from argparse import ArgumentTypeError, SUPPRESS
 from locale import getpreferredencoding
 from multiprocessing import cpu_count
-from typing import Iterable, Any
 import os
 import re
 
