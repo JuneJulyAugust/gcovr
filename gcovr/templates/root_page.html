@@ -9,9 +9,20 @@
     {{CSS | indent}}
 
   </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 
 <body>
+
+  <script>
+    $(document).ready(function($) {
+      $("tr.hide").hide();
+
+      $("tr.header").click(function(){
+        $(this).toggleClass("expand").nextUntil("tr.header").toggle();
+      });
+    });
+  </script>
 
   <table width="100%" border=0 cellspacing=0 cellpadding=0>
     <tr><td class="title">GCC Code Coverage Report</td></tr>
@@ -78,18 +89,43 @@
 
     {% for row in ROWS %}
 
-    <tr>
-      <td class="coverFile" {{row.altstyle}}>{{row.filename}}</td>
-      <td class="coverBar" align="center" {{row.altstyle}}>
-        <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
-                <div class="graph"><strong class="bar" style="width:{{row.LinesCoverage}}%; {{row.BarBorder}}background-color:{{row.LinesBar}}"></strong></div>
-                </td></tr></table>
-      </td>
-      <td class="CoverValue" style="font-weight:bold; background-color:{{row.LinesColor}};">{{row.LinesCoverage}}&nbsp;%</td>
-      <td class="CoverValue" style="font-weight:bold; background-color:{{row.LinesColor}};">{{row.LinesExec}} / {{row.LinesTotal}}</td>
-      <td class="CoverValue" style="background-color:{{row.BranchesColor}};">{{row.BranchesCoverage}}&nbsp;%</td>
-      <td class="CoverValue" style="background-color:{{row.BranchesColor}};">{{row.BranchesExec}} / {{row.BranchesTotal}}</td>
-    </tr>
+      {% if row.IsSourceFile == False %}
+        <tr class="header expand">
+          <td style="font-weight:bold; background-color:#ddd;">
+            <span class="sign"></span> <label>[ {{row.filename}} ]</label>
+          </td>
+
+          <td class="coverBar" align="center" {{row.altstyle}}>
+            <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                    <div class="graph"><strong class="bar" style="width:{{row.LinesCoverage}}%; {{row.BarBorder}}background-color:{{row.LinesBar}}"></strong></div>
+                    </td></tr></table>
+          </td>
+          <td class="CoverValue" style="font-weight:bold; background-color:{{row.LinesColor}};">{{row.LinesCoverage}}&nbsp;%</td>
+          <td class="CoverValue" style="font-weight:bold; background-color:{{row.LinesColor}};">{{row.LinesExec}} / {{row.LinesTotal}}</td>
+          <td class="CoverValue" style="background-color:{{row.BranchesColor}};">{{row.BranchesCoverage}}&nbsp;%</td>
+          <td class="CoverValue" style="background-color:{{row.BranchesColor}};">{{row.BranchesExec}} / {{row.BranchesTotal}}</td>
+        </tr>
+      {% endif %}
+
+      {% if row.IsSourceFile == True %}
+        {% if row.HasParent == True%}
+          <tr class="hide">
+        {% else %}
+          <tr class="header"> </tr>
+          <tr class="always_show">
+        {% endif%}
+          <td class="coverFile" {{row.altstyle}}>{{row.filename}}</td>
+          <td class="coverBar" align="center" {{row.altstyle}}>
+            <table border=0 cellspacing=0 cellpadding=1><tr><td class="coverBarOutline">
+                    <div class="graph"><strong class="bar" style="width:{{row.LinesCoverage}}%; {{row.BarBorder}}background-color:{{row.LinesBar}}"></strong></div>
+                    </td></tr></table>
+          </td>
+          <td class="CoverValue" style="font-weight:bold; background-color:{{row.LinesColor}};">{{row.LinesCoverage}}&nbsp;%</td>
+          <td class="CoverValue" style="font-weight:bold; background-color:{{row.LinesColor}};">{{row.LinesExec}} / {{row.LinesTotal}}</td>
+          <td class="CoverValue" style="background-color:{{row.BranchesColor}};">{{row.BranchesCoverage}}&nbsp;%</td>
+          <td class="CoverValue" style="background-color:{{row.BranchesColor}};">{{row.BranchesExec}} / {{row.BranchesTotal}}</td>
+        </tr>
+      {% endif %}
 
     {% endfor %}
 
