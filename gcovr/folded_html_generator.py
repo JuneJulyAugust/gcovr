@@ -180,10 +180,6 @@ def print_folded_html_report(covdata, output_file, options):
         filter(lambda x: len(x.split(os.sep)) == 2, common_dir_depth_two)
     )
 
-    print(
-        "commondirs {}, filtered commondirs {}".format(commondirs, common_dir_depth_two)
-    )
-
     # Define the common root directory, which may differ from options.root
     # when source files share a common prefix.
     if len(files) > 1:
@@ -268,8 +264,6 @@ def print_folded_html_report(covdata, output_file, options):
             dir_coverage[com]["branches_total"],
             nan_value=0.0,
         )
-        print(dir_coverage[com])
-        print("{} branch coverage: {}".format(com, branches_coverage))
 
         if com == "":
             sourcefile = "All"
